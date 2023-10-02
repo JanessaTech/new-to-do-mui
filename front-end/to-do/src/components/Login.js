@@ -69,7 +69,7 @@ export default function Login() {
                     '& .MuiTextField-root,& .MuiFormControl-root': {
                     mb: 2
                 } 
-            }} noValidate>
+            }} noValidate autoComplete='off'>
                 <Box sx={{height:50, mb:2}} color='red'>
                     {errorMsg}
                 </Box>

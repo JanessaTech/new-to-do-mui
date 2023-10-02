@@ -29,7 +29,7 @@ export default function Home() {
           <Divider />
           <List>
             <ListItem>
-              <ListItemButton component={Link} to='profile'>
+              <ListItemButton component={Link} to='profile' disableRipple>
                 <ListItemIcon>
                   <PersonOutlineOutlinedIcon/>
                 </ListItemIcon>
@@ -37,7 +37,7 @@ export default function Home() {
               </ListItemButton>
             </ListItem>
             <ListItem>
-              <ListItemButton component={Link} to='todo'>
+              <ListItemButton component={Link} to='todo' disableRipple>
                 <ListItemIcon>
                   <FormatListBulletedOutlinedIcon/>
                 </ListItemIcon>
@@ -46,7 +46,7 @@ export default function Home() {
             </ListItem>
           </List>
         </Drawer>
-        <Box sx={{m:5, width:`calc(100% - ${drawerWidth}px)`}}><Outlet /></Box>
+        <Box sx={{m:1, width:`calc(100% - ${drawerWidth}px)`}}><Outlet /></Box>
     </Box>
   );
 }

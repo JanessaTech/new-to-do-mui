@@ -1,7 +1,7 @@
 import React from 'react'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Button, Container, CssBaseline, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput } from '@mui/material';
+import { Button, Container, CssBaseline, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useEffect } from 'react';
 
@@ -18,6 +18,7 @@ export default function Signup() {
     const [errorMsg, setErrorMsg] = React.useState('')
     const [inValidEmail, setInValidEmail] = React.useState(false)
     const [email, setEmail] = React.useState('');
+    const [age, setAge] = React.useState(20)
 
     const handleSignup = (e) => {
         e.preventDefault()
@@ -89,6 +90,11 @@ export default function Signup() {
     useEffect(() => validateEmail(), [email])
     useEffect(() => validatePassword(), [password1])
 
+    const handleAgeChange = (e) => {
+        e.preventDefault()
+        setAge(e.target.value)
+    }
+
     return (
         <Container maxWidth='xs'>
             <CssBaseline/>
@@ -156,6 +162,21 @@ export default function Signup() {
                         error={inValidEmail}
                         onChange={handleEmailChange}
                     ></TextField>
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">Age</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-label"
+                            id="demo-simple-select"
+                            value={age}
+                            label="Age"
+                            onChange={handleAgeChange}
+                        >
+                            <MenuItem value={20}>Twenty</MenuItem>
+                            <MenuItem value={30}>Thirty</MenuItem>
+                            <MenuItem value={40}>Forty</MenuItem>
+                            <MenuItem value={50}>Fifty</MenuItem>
+                        </Select>
+                    </FormControl>
                     <Button variant="contained" type="submit">Signup</Button>
                 </Box>
             </Box>
