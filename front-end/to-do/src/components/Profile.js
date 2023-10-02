@@ -107,12 +107,8 @@ export default function Profile() {
                   <MenuItem value={50}>Fifty</MenuItem>
               </Select>
           </FormControl>
-          {buttonToggle ? <Button variant="contained" type="button" onClick={handleModification}>Modify</Button> :<Button variant="contained" type="submit">Save</Button>}
+          {buttonToggle ? <Button sx={{margin:'auto', display:'block', width:80}} variant="contained" type="button" onClick={handleModification}>Modify</Button> :<Button sx={{margin:'auto', display:'block', width:80}} variant="contained" type="submit">Save</Button>}
       </Box>
-
-      
-
-
     </Container>
   )
 }
