@@ -1,14 +1,19 @@
 import React from 'react'
-import { Box, Button, Container, CssBaseline, FormControl, InputLabel, MenuItem, Select, TextField } from '@mui/material'
+import { Box, Button, Container, CssBaseline, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import { useEffect } from 'react';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 export default function Profile() {
   const [id, setId] = React.useState(1)
   const [userName, setUserName] = React.useState('Janessa Tech')
   const [email, setEmail] = React.useState('xx@gmail.com')
+  const [age, setAge] = React.useState(20)
+  const [password, setPassword] = React.useState('123456ss') 
+  const [showPassword, setShowPassword] = React.useState(false)
   const [inValidEmail, setInValidEmail] = React.useState(false)
   const [errorMsg, setErrorMsg] = React.useState('xxx')
-  const [age, setAge] = React.useState(20)
+  const [passwordDisabled, setPasswordDisabled] = React.useState(true)
+  const [inValidPassword, setInValidPassword] = React.useState(false)
   const [emailDisabled, setEmailDisabled] = React.useState(true)
   const [ageDisabled, setAgeDisabled]   = React.useState(true)
   const [buttonToggle, setButtonToggle] = React.useState(true)
@@ -33,12 +38,14 @@ export default function Profile() {
     }
   }
   useEffect(() => validateEmail(), [email])
+  useEffect(() => validatePassword(), [password])
 
   const handleModification = (e) => {
     e.preventDefault()
     console.log(e.target.getAttribute('type'))
     e.target.setAttribute('type', 'submit')
     e.target.setAttribute('onClick', null)
+    setPasswordDisabled(false)
     setEmailDisabled(false)
     setAgeDisabled(false)
     setButtonToggle(!buttonToggle)
@@ -46,17 +53,45 @@ export default function Profile() {
 
   const handleSave = (e) => {
     e.preventDefault()
-    if (inValidEmail) return
+    if (inValidEmail || inValidPassword) return
     setButtonToggle(!buttonToggle)
+    setPasswordDisabled(true)
     setEmailDisabled(true)
     setAgeDisabled(true)
-    console.log(`id=${id}, userName=${userName}, email=${email}, age=${age}`)
+    console.log(`id=${id}, userName=${userName}, password=${password}, email=${email}, age=${age},`)
+  }
+
+  const handlePasswordChange = (e) => {
+    e.preventDefault()
+    setPassword(e.target.value)
+  }
+  const handleClickShowPassword = (e) => {
+    e.preventDefault()
+    setShowPassword(!showPassword)
+  }
+  const validatePassword = () => {
+    const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
+    if (!passRegex.test(password)) {
+        setErrorMsg('Password should contain at least one letter, one number and minimum eight characters')
+        setInValidPassword(true)
+    }else {
+        setErrorMsg('')
+        setInValidPassword(false)
+    }
+  }
+
+  const sx = {
+    button: {
+      margin:'auto', 
+      display:'block', 
+      width:80
+    }
   }
 
   return (
     <Container maxWidth='xs'>
       <CssBaseline/>
-      <Box component='form' onSubmit={handleSave} sx={{ mt: 0, width:1,
+      <Box component='form' onSubmit={handleSave} sx={{ mt: 3, width:1,
                     '& .MuiTextField-root,& .MuiFormControl-root': {
                     mb: 2}
               }}>
@@ -80,6 +115,25 @@ export default function Profile() {
               required
               fullWidth
               disabled
+          ></TextField>
+          <TextField
+              label='Password' 
+              variant="outlined"
+              color='primary'
+              type={showPassword ? 'text': 'password'}
+              value={password}
+              required
+              fullWidth
+              InputProps={{
+                endAdornment:(
+                <InputAdornment position='end'>
+                    <IconButton onClick={handleClickShowPassword}>
+                        {showPassword ? <VisibilityOff/>: <Visibility /> }
+                    </IconButton>
+                </InputAdornment>) 
+              }}
+              disabled={passwordDisabled}
+            onChange={handlePasswordChange}
           ></TextField>
           <TextField
               label='Email' 
@@ -107,7 +161,7 @@ export default function Profile() {
                   <MenuItem value={50}>Fifty</MenuItem>
               </Select>
           </FormControl>
-          {buttonToggle ? <Button sx={{margin:'auto', display:'block', width:80}} variant="contained" type="button" onClick={handleModification}>Modify</Button> :<Button sx={{margin:'auto', display:'block', width:80}} variant="contained" type="submit">Save</Button>}
+          {buttonToggle ? <Button sx={sx.button} variant="contained" type="button" onClick={handleModification}>Modify</Button> :<Button sx={sx.button} variant="contained" type="submit">Save</Button>}
       </Box>
     </Container>
   )
