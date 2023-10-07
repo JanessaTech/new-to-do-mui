@@ -198,6 +198,7 @@ export default function Todo() {
         }
         axios(options)
             .then((response) => {
+              console.log('run ok')
                 console.log(response.data.data)
                 let newTodos = []
                 for(let todo of state.todos) {
@@ -211,6 +212,7 @@ export default function Todo() {
                 })
             })
             .catch((error) => {
+              console.log('run error')
                 setState({
                     ...state,
                     error: error.response.data.message,
