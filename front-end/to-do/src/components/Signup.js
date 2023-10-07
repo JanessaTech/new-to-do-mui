@@ -4,95 +4,172 @@ import TextField from '@mui/material/TextField';
 import { Button, Container, CssBaseline, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useEffect } from 'react';
+import axios from 'axios';
+import {useNavigate} from 'react-router-dom';
 
 
 export default function Signup() {
-    const [userName, setUserName] = React.useState('')
-    const [inValidUserName, setInValidUserName] = React.useState(false)
-    const [showPassword1, setShowPassword1] = React.useState(false)
-    const [showPassword2, setShowPassword2] = React.useState(false)
-    const [password1, setPassword1] = React.useState('')
-    const [password2, setPassword2] = React.useState('')
-    const [inValidPassword, setInValidPassword] = React.useState(false)
-    const [mismatched, setMismatch] = React.useState(false)
-    const [errorMsg, setErrorMsg] = React.useState('')
-    const [inValidEmail, setInValidEmail] = React.useState(false)
-    const [email, setEmail] = React.useState('');
-    const [age, setAge] = React.useState(20)
+    const navigate = useNavigate();
+    const [state, setState] = React.useState({
+        name: '',
+        inValidName: false,
+        showPassword1: false,
+        showPassword2: false,
+        password1: '',
+        password2: '',
+        inValidPassword: false,
+        mismatched: false,
+        errorMsg: '',
+        inValidEmail: false,
+        email: '',
+        age: 20
+    })
 
     const handleSignup = (e) => {
         e.preventDefault()
-        console.log(`signup. username=${userName}, password=${password1}`)
+        console.log('inValidUserName=', state.inValidName)
+        console.log('inValidPassword=', state.inValidPassword)
+        console.log('mismatched=', state.mismatched)
+        console.log('inValidEmail=', state.inValidEmail)
+        if (state.inValidName || state.inValidPassword ||state. mismatched || state.inValidEmail) return
+        console.log(`signup. username=${state.name}, password=${state.password1}, email=${state.email}, age=${state.age}`)
+
+        const signup = {
+            name : state.name,
+            password : state.password1,
+            age: state.age,
+            roles: ["user"],
+            email : state.email
+        }
+        let options = {};
+        options = {
+            url: 'http://127.0.0.1:3100/apis/v1/users/register',
+            method: 'post',
+            data: signup
+        }
+        axios(options)
+            .then((response) => {
+                navigate('/login')
+            })
+            .catch((err) => {
+                console.log(err.response.data)
+                setState({
+                    ...state,
+                    errorMsg: err.response.data.message
+                })
+            })
+
     }
-    const handleUserNameChange = (e) => {
+    const handleNameChange = (e) => {
         e.preventDefault()
         if (e.target.value.length > 10) {
-            setErrorMsg('The length of user name should be not greater than 10')
-            setInValidUserName(true)
+            setState({
+                ...state,
+                errorMsg: 'The length of user name should be not greater than 10',
+                inValidName: true,
+                name: e.target.value
+            })
         } else {
-            setUserName(e.target.value)
-            setInValidUserName(false)
-            setErrorMsg('')
+            setState({
+                ...state,
+                errorMsg: '',
+                inValidName: false,
+                name: e.target.value
+            })
         }
     }
 
     const handleClickShowPassword1 = (e) => {
         e.preventDefault()
-        setShowPassword1(!showPassword1)
+        setState({
+            ...state,
+            showPassword1: !state.showPassword1
+        })
     }
     const handleClickShowPassword2 = (e) => {
         e.preventDefault()
-        setShowPassword2(!showPassword2)
+        setState({
+            ...state,
+            showPassword2: !state.showPassword2
+        })
     }
 
     const handleEmailChange = (e) => {
         e.preventDefault()
-        setEmail(e.target.value);
+        setState({
+            ...state,
+           email: e.target.value 
+        })
     }
     const handlePassword1Change = (e) => {
         e.preventDefault()
-        setPassword1(e.target.value)
+        setState({
+            ...state,
+            password1: e.target.value
+        })
     }
     const handlePassword2Change = (e) => {
         e.preventDefault()
-        setPassword2(e.target.value)
-        if (e.target.value !== password1) {
-            setErrorMsg('Password is not matched')
-            setMismatch(true)
+        if (e.target.value !== state.password1) {
+            setState({
+                ...state,
+                errorMsg: 'Password is not matched',
+                mismatched: true,
+                password2: e.target.value
+            })
         } else {
-            setErrorMsg('')
-            setMismatch(false)
+            setState({
+                ...state,
+                errorMsg:'',
+                mismatched: false,
+                password2: e.target.value
+            })
         }
     }
 
     const validateEmail = () => {
         const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-        if (email.length > 0 && !emailRegex.test(email)) {
-            setInValidEmail(true);
-            setErrorMsg('Please input valid email')
+        if (state.email.length > 0 && !emailRegex.test(state.email)) {
+            setState({
+                ...state,
+                inValidEmail: true,
+                errorMsg: 'Please input valid email'
+            })
         } else {
-            setInValidEmail(false);
-            setErrorMsg('')
+            setState({
+                ...state,
+                inValidEmail: false,
+                errorMsg: ''
+            })
         }
     }
 
     const validatePassword = () => {
         const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
-        if (!passRegex.test(password1)) {
-            setErrorMsg('Password should contain at least one letter, one number and minimum eight characters')
-            setInValidPassword(true)
+        if (!passRegex.test(state.password1)) {
+            setState({
+                ...state,
+                errorMsg:'Password should contain at least one letter, one number and minimum eight characters',
+                inValidPassword: true
+            })
         }else {
-            setErrorMsg('')
-            setInValidPassword(false)
+            setState({
+                ...state,
+                errorMsg:'',
+                inValidPassword: false
+            })
         }
     }
 
-    useEffect(() => validateEmail(), [email])
-    useEffect(() => validatePassword(), [password1])
+    useEffect(() => validateEmail(), [state.email])
+    useEffect(() => validatePassword(), [state.password1])
 
     const handleAgeChange = (e) => {
         e.preventDefault()
-        setAge(e.target.value)
+        setState({
+            ...state,
+            age: e.target.value
+        })
     }
 
     return (
@@ -108,44 +185,44 @@ export default function Signup() {
                 noValidate autoComplete='off'
                 >
                     <Box sx={{height:50, mb:2}} color='red'>
-                        {errorMsg}
+                        {state.errorMsg}
                     </Box>
                     <TextField
                         label='User Name' 
                         variant="outlined"
                         color='primary'
-                        error={inValidUserName}
+                        error={state.inValidName}
                         fullWidth
                         required
-                        onChange={handleUserNameChange}
+                        onChange={handleNameChange}
                     ></TextField>
-                    <FormControl variant="outlined" fullWidth color='primary' required error={inValidPassword}>
+                    <FormControl variant="outlined" fullWidth color='primary' required error={state.inValidPassword}>
                         <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                         <OutlinedInput
                             id='password1' 
                             aria-label='toggle password visibility'
                             label='Password'
-                            type={showPassword1 ? 'text': 'password'}
+                            type={state.showPassword1 ? 'text': 'password'}
                             endAdornment={
                                 <InputAdornment position='end'>
                                     <IconButton onClick={handleClickShowPassword1}>
-                                        {showPassword1 ? <VisibilityOff/>: <Visibility /> }
+                                        {state.showPassword1 ? <VisibilityOff/>: <Visibility /> }
                                     </IconButton>
                                 </InputAdornment>}
                             onChange={handlePassword1Change}
                             />
                     </FormControl>
-                    <FormControl variant="outlined" fullWidth color='primary' required error={mismatched}>
+                    <FormControl variant="outlined" fullWidth color='primary' required error={state.mismatched}>
                         <InputLabel htmlFor="outlined-adornment-password-again">Password</InputLabel>
                         <OutlinedInput
                             id='password2' 
                             aria-label='toggle password visibility'
                             label='Password'
-                            type={showPassword2 ? 'text': 'password'}
+                            type={state.showPassword2 ? 'text': 'password'}
                             endAdornment={
                                 <InputAdornment position='end'>
                                     <IconButton onClick={handleClickShowPassword2}>
-                                        {showPassword2 ? <VisibilityOff/>: <Visibility /> }
+                                        {state.showPassword2 ? <VisibilityOff/>: <Visibility /> }
                                     </IconButton>
                                 </InputAdornment>}
                             onChange={handlePassword2Change}
@@ -158,8 +235,8 @@ export default function Signup() {
                         color='primary'
                         fullWidth
                         type='email'
-                        value={email}
-                        error={inValidEmail}
+                        value={state.email}
+                        error={state.inValidEmail}
                         onChange={handleEmailChange}
                     ></TextField>
                     <FormControl fullWidth>
@@ -167,7 +244,7 @@ export default function Signup() {
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={age}
+                            value={state.age}
                             label="Age"
                             onChange={handleAgeChange}
                         >

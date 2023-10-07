@@ -1,83 +1,150 @@
 import React from 'react'
 import { Box, Button, Container, CssBaseline, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material'
 import { useEffect } from 'react';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { VisibilityOff } from '@mui/icons-material';
+import { UserContext } from './Home';
+import axios from 'axios';
 
 export default function Profile() {
-  const [id, setId] = React.useState(1)
-  const [userName, setUserName] = React.useState('Janessa Tech')
-  const [email, setEmail] = React.useState('xx@gmail.com')
-  const [age, setAge] = React.useState(20)
-  const [password, setPassword] = React.useState('123456ss') 
-  const [showPassword, setShowPassword] = React.useState(false)
-  const [inValidEmail, setInValidEmail] = React.useState(false)
-  const [errorMsg, setErrorMsg] = React.useState('xxx')
-  const [passwordDisabled, setPasswordDisabled] = React.useState(true)
-  const [inValidPassword, setInValidPassword] = React.useState(false)
-  const [emailDisabled, setEmailDisabled] = React.useState(true)
-  const [ageDisabled, setAgeDisabled]   = React.useState(true)
-  const [buttonToggle, setButtonToggle] = React.useState(true)
+  const user = React.useContext(UserContext)
+  const [state, setState] = React.useState(
+    {
+      id: user.id,
+      name: user.name,
+      token: user.token,
+      password: 'hidden001', // dummy password
+      email: '',
+      age: 20,
+      inValidEmail: false,
+      errorMsg: '',
+      emailDisabled: true,
+      ageDisabled: true,
+      buttonToggle: true,
+      isLoading: false
+    }
+  )
+
+  useEffect(() => {
+        console.log('start getting user info by id', state.id)
+        axios.defaults.headers.common = {Authorization: `Bearer ${state.token}`}
+        let options = {
+            url : `http://127.0.0.1:3100/apis/v1/users/${state.id}`,
+            method: 'get'
+        }
+        axios(options)
+            .then((response) => {
+                console.log('response.data.data in getUserById')
+                console.log(response.data.data)
+                let user = response.data.data
+                setState({ 
+                  ...state, 
+                  age: user.age,
+                  email: user.email,
+                  isLoading: false
+                })
+            })
+            .catch((error) => {
+                console.log('error in axios of fetchAccount')
+                console.log(error.response.data)
+                setState({
+                  ...state,
+                  errorMsg: error.response.data.message
+                })
+            })
+  }, [])
 
   const handleEmailChange = (e) => {
     e.preventDefault()
-    setEmail(e.target.value)
+    setState({
+      ...state,
+      email: e.target.value
+    })
   }
   const handleAgeChange = (e) => {
     e.preventDefault()
-    setAge(e.target.value)
+    setState({
+      ...state,
+      age: e.target.value
+    })
   }
 
   const validateEmail = () => {
     const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    if (email.length > 0 && !emailRegex.test(email)) {
-        setInValidEmail(true);
-        setErrorMsg('Please input valid email')
+    if (state.email.length > 0 && !emailRegex.test(state.email)) {
+      setState({
+        ...state,
+        inValidEmail: true,
+        errorMsg: 'Please input valid email'
+      })
     } else {
-        setInValidEmail(false);
-        setErrorMsg('')
+      setState(
+        {
+          ...state,
+          inValidEmail: false,
+          errorMsg:''
+        }
+      )
     }
   }
-  useEffect(() => validateEmail(), [email])
-  useEffect(() => validatePassword(), [password])
+  useEffect(() => validateEmail(), [state.email])
 
   const handleModification = (e) => {
     e.preventDefault()
     console.log(e.target.getAttribute('type'))
     e.target.setAttribute('type', 'submit')
     e.target.setAttribute('onClick', null)
-    setPasswordDisabled(false)
-    setEmailDisabled(false)
-    setAgeDisabled(false)
-    setButtonToggle(!buttonToggle)
+    setState(
+      {
+        ...state,
+        buttonToggle: !state.buttonToggle,
+        emailDisabled: false,
+        ageDisabled: false
+      }
+    )
   }
 
   const handleSave = (e) => {
     e.preventDefault()
-    if (inValidEmail || inValidPassword) return
-    setButtonToggle(!buttonToggle)
-    setPasswordDisabled(true)
-    setEmailDisabled(true)
-    setAgeDisabled(true)
-    console.log(`id=${id}, userName=${userName}, password=${password}, email=${email}, age=${age},`)
-  }
+    if (state.inValidEmail) return
+    console.log(`id=${state.id}, userName=${state.name}, email=${state.email}, age=${state.age},`)
 
-  const handlePasswordChange = (e) => {
-    e.preventDefault()
-    setPassword(e.target.value)
-  }
-  const handleClickShowPassword = (e) => {
-    e.preventDefault()
-    setShowPassword(!showPassword)
-  }
-  const validatePassword = () => {
-    const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
-    if (!passRegex.test(password)) {
-        setErrorMsg('Password should contain at least one letter, one number and minimum eight characters')
-        setInValidPassword(true)
-    }else {
-        setErrorMsg('')
-        setInValidPassword(false)
+    axios.defaults.headers.common = {Authorization: `Bearer ${state.token}`}
+    const save = {
+      id: state.id,
+      name: state.name,
+      email: state.email,
+      age: state.age
     }
+    let options = {};
+        options = {
+            url: 'http://127.0.0.1:3100/apis/v1/users',
+            method: 'put',
+            data: save
+    }
+    axios(options)
+            .then((response) => {
+              console.log('response.data.data in updateUser')
+              console.log(response.data.data)
+              let user = response.data.data
+              setState({ 
+                ...state, 
+                age: user.age,
+                name: user.name,
+                email: user.email,
+                buttonToggle: !state.buttonToggle,
+                emailDisabled: true,
+                ageDisabled: true,
+                isLoading: false
+              })
+            })
+            .catch((error) => {
+                console.log('error in axios of updateUser')
+                console.log(error.response.data)
+                setState({
+                  ...state,
+                  errorMsg: error.response.data.message
+                })
+            })  
   }
 
   const sx = {
@@ -96,13 +163,13 @@ export default function Profile() {
                     mb: 2}
               }}>
           <Box sx={{height:50, mb:2}} color='red'>
-                        {errorMsg}
+                        {state.errorMsg}
           </Box>
           <TextField
               label='ID' 
               variant="outlined"
               color='primary'
-              value={id}
+              value={state.id}
               required
               fullWidth
               disabled
@@ -111,7 +178,7 @@ export default function Profile() {
               label='User Name' 
               variant="outlined"
               color='primary'
-              value={userName}
+              value={state.name}
               required
               fullWidth
               disabled
@@ -120,20 +187,19 @@ export default function Profile() {
               label='Password' 
               variant="outlined"
               color='primary'
-              type={showPassword ? 'text': 'password'}
-              value={password}
+              type='password'
+              value={state.password}
               required
               fullWidth
               InputProps={{
                 endAdornment:(
                 <InputAdornment position='end'>
-                    <IconButton onClick={handleClickShowPassword}>
-                        {showPassword ? <VisibilityOff/>: <Visibility /> }
+                    <IconButton>
+                      <VisibilityOff/>
                     </IconButton>
                 </InputAdornment>) 
               }}
-              disabled={passwordDisabled}
-            onChange={handlePasswordChange}
+              disabled={true}
           ></TextField>
           <TextField
               label='Email' 
@@ -141,17 +207,17 @@ export default function Profile() {
               color='primary'
               fullWidth
               type='email'
-              value={email}
-              error={inValidEmail}
-              disabled={emailDisabled}
+              value={state.email}
+              error={state.inValidEmail}
+              disabled={state.emailDisabled}
               onChange={handleEmailChange}
           ></TextField>
-          <FormControl fullWidth disabled={ageDisabled}>
+          <FormControl fullWidth disabled={state.ageDisabled}>
               <InputLabel id="demo-simple-select-label">Age</InputLabel>
               <Select
                   labelId="demo-simple-select-label"
                   id="demo-simple-select"
-                  value={age}
+                  value={state.age}
                   label="Age"
                   onChange={handleAgeChange}
               >
@@ -161,7 +227,7 @@ export default function Profile() {
                   <MenuItem value={50}>Fifty</MenuItem>
               </Select>
           </FormControl>
-          {buttonToggle ? <Button sx={sx.button} variant="contained" type="button" onClick={handleModification}>Modify</Button> :<Button sx={sx.button} variant="contained" type="submit">Save</Button>}
+          {state.buttonToggle ? <Button sx={sx.button} variant="contained" type="button" onClick={handleModification}>Modify</Button> :<Button sx={sx.button} variant="contained" type="submit">Save</Button>}
       </Box>
     </Container>
   )

@@ -5,61 +5,102 @@ import { Button, Container, CssBaseline, FormControl, IconButton, InputAdornment
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Login() {
-    const [userName, setUserName] = React.useState('')
-    const [inValidUserName, setInValidUserName] = React.useState(false)
-    const [showPassword, setShowPassword] = React.useState(false)
-    const [inValidPassword, setInValidPassword] = React.useState(false)
-    const [password, setPassword] = React.useState('')
-    const [errorMsg, setErrorMsg] = React.useState('')
+    const navigate = useNavigate();
+    const [state, setState] = React.useState({
+        name: '',
+        inValidName: false,
+        showPassword: false,
+        inValidPassword: false,
+        password: '',
+        errorMsg: ''
+    })
 
     const handleUserNameChange = (e) => {
         e.preventDefault()
+
         if (e.target.value.length > 10) {
-            setErrorMsg('The length of user name should be not greater than 10')
-            setInValidUserName(true)
+            setState({
+              ...state,
+              inValidName: true,
+              errorMsg: 'The length of user name should be not greater than 10'
+            })
         } else {
-            setUserName(e.target.value)
-            setInValidUserName(false)
-            setErrorMsg('')
+            setState({
+                ...state,
+                name: e.target.value,
+                inValidName: false,
+                errorMsg: ''
+            })
         }
     }
 
     const handleClickShowPassword = (e) => {
         e.preventDefault()
-        setShowPassword(!showPassword)
+        setState({
+            ...state,
+            showPassword: !state.showPassword
+        })
     }
     const handlePasswordChange = (e) => {
         e.preventDefault()
-        setPassword(e.target.value)
+        setState({
+            ...state,
+            password: e.target.value
+        })
     }
 
     const validatePassword = () => {
         const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
-        if (!passRegex.test(password)) {
-            setErrorMsg('Password should contain at least one letter, one number and minimum eight characters')
-            setInValidPassword(true)
+        if (!passRegex.test(state.password)) {
+            setState({
+                ...state,
+                errorMsg: 'Password should contain at least one letter, one number and minimum eight characters',
+                inValidPassword: true
+            })
         }else {
-            setErrorMsg('')
-            setInValidPassword(false)
+            setState({
+                ...state,
+                errorMsg: '',
+                inValidPassword: false
+            })
         }
     }
 
-    useEffect(() => validatePassword(), [password])
+    useEffect(() => validatePassword(), [state.password])
 
     const handleLogin = (e) => {
         e.preventDefault()
-        console.log(`login. username=${userName}, password=${password}`)
+        if (state.inValidName || state.inValidPassword) return
+        console.log(`login. name=${state.name}, password=${state.password}`)
+        const login = {
+            name : state.name,
+            password: state.password
+        }
+        let options = {};
+        options = {
+            url: 'http://127.0.0.1:3100/apis/v1/users/login',
+            method: 'post',
+            data: login
+        }
+        axios(options)
+            .then((response) => {
+                const user = response.data.data
+                console.log('login ok')
+                console.log(user)
+                localStorage.setItem('user', JSON.stringify(user))
+                navigate('/home')
+            })
+            .catch((err) => {
+                console.log('login error')
+                console.log(err.response.data)
+                setState({...state, errorMsg: err.response.data.message || 'Please signup first'})
+            })
     }
 
-    const ButtonWithLink = () => (
-        <Link to="/about">
-         <Button variant="contained" color="primary">
-           About Page
-         </Button>
-        </Link>
-      )
   return (
     <Container maxWidth='xs'>
         <CssBaseline/>
@@ -71,28 +112,28 @@ export default function Login() {
                 } 
             }} noValidate autoComplete='off'>
                 <Box sx={{height:50, mb:2}} color='red'>
-                    {errorMsg}
+                    {state.errorMsg}
                 </Box>
                 <TextField
                     label='User Name' 
                     variant="outlined"
                     color='primary'
-                    error={inValidUserName}
+                    error={state.inValidName}
                     fullWidth
                     required
                     onChange={handleUserNameChange}
                 ></TextField>
-                <FormControl variant="outlined" fullWidth color='primary' required error={inValidPassword}>
+                <FormControl variant="outlined" fullWidth color='primary' required error={state.inValidPassword}>
                         <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                         <OutlinedInput 
                             id='password' 
                             aria-label='toggle password visibility'
                             label='Password'
-                            type={showPassword ? 'text': 'password'}
+                            type={state.showPassword ? 'text': 'password'}
                             endAdornment={
                                 <InputAdornment position='end'>
                                     <IconButton onClick={handleClickShowPassword}>
-                                        {showPassword ? <VisibilityOff/>: <Visibility /> }
+                                        {state.showPassword ? <VisibilityOff/>: <Visibility /> }
                                     </IconButton>
                                 </InputAdornment>}
                             onChange={handlePasswordChange}
