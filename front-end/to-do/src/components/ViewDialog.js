@@ -19,9 +19,9 @@ export default function ViewDialog({open, closeView, id, title, body}) {
               <Typography sx={{ml:1, lineHeight:'40px'}}>{title}</Typography>
             </DialogTitle>
             <DialogContent sx={{ maxHeight:'400px'}} dividers>
-            {
-              body
-            }
+              <Typography sx={{wordWrap: "break-word"}}>
+                 {body}
+              </Typography>
             </DialogContent>
             <DialogActions>
               <Button onClick={closeView}>Close</Button>
