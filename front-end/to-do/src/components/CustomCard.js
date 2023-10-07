@@ -1,4 +1,4 @@
-import { Avatar, Card, CardActions, CardContent, CardHeader, IconButton, Typography } from '@mui/material'
+import { Avatar, Card, CardActions, CardContent, CardHeader, IconButton, Tooltip, Typography } from '@mui/material'
 import React from 'react'
 import { red } from '@mui/material/colors'
 import DeleteIcon from '@mui/icons-material/Delete'
@@ -13,25 +13,33 @@ export default function CustomCard({id, title, body, handleView, handleDelete, h
                   <Avatar sx={{bgcolor:red[500]}} aria-label='todo'>{id}</Avatar>
                 }
                 action={
-                  <IconButton aria-label="settings" onClick={ (e)=> handleDelete(e, id)}>
-                    <DeleteIcon/>
-                  </IconButton>
+                  <Tooltip title='Delete'>
+                    <IconButton aria-label="settings" onClick={ (e)=> handleDelete(e, id)}>
+                      <DeleteIcon/>
+                    </IconButton>
+                  </Tooltip>
+                  
                 }
                 title={title}
                 > 
               </CardHeader>
               <CardContent sx={{height:160, overflow:'hidden'}}>
-                  <Typography>
+                  <Typography sx={{wordWrap: "break-word"}}>
                  {body}
                   </Typography>
                 </CardContent>
                 <CardActions >
-                  <IconButton sx={{marginLeft:'auto'}} aria-label='Update todo' onClick={ (e) => handleUpdate(e, id)}>
-                    <UpdateIcon/>
-                  </IconButton>
-                  <IconButton aria-label='View todo' onClick={(e) => handleView(e, id)}>
-                    <VisibilityIcon/>
-                  </IconButton>
+                  <Tooltip title='Update'>
+                    <IconButton sx={{marginLeft:'auto'}} aria-label='Update todo' onClick={ (e) => handleUpdate(e, id)}>
+                      <UpdateIcon/>
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="View">
+                    <IconButton aria-label='View todo' onClick={(e) => handleView(e, id)}>
+                      <VisibilityIcon/>
+                    </IconButton>
+                  </Tooltip>
+                  
                 </CardActions>
             </Card>
       )

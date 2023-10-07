@@ -19,13 +19,14 @@ export default function Login() {
         errorMsg: ''
     })
 
-    const handleUserNameChange = (e) => {
+    const handleNameChange = (e) => {
         e.preventDefault()
 
         if (e.target.value.length > 10) {
             setState({
               ...state,
               inValidName: true,
+              name: e.target.value,
               errorMsg: 'The length of user name should be not greater than 10'
             })
         } else {
@@ -121,7 +122,7 @@ export default function Login() {
                     error={state.inValidName}
                     fullWidth
                     required
-                    onChange={handleUserNameChange}
+                    onChange={handleNameChange}
                 ></TextField>
                 <FormControl variant="outlined" fullWidth color='primary' required error={state.inValidPassword}>
                         <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>

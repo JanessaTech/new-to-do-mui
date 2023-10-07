@@ -106,7 +106,7 @@ export default function Profile() {
   const handleSave = (e) => {
     e.preventDefault()
     if (state.inValidEmail) return
-    console.log(`id=${state.id}, userName=${state.name}, email=${state.email}, age=${state.age},`)
+    console.log(`id=${state.id}, name=${state.name}, email=${state.email}, age=${state.age},`)
 
     axios.defaults.headers.common = {Authorization: `Bearer ${state.token}`}
     const save = {
@@ -200,6 +200,15 @@ export default function Profile() {
                 </InputAdornment>) 
               }}
               disabled={true}
+          ></TextField>
+          <TextField
+              label='Token' 
+              variant="outlined"
+              color='primary'
+              value={state.token}
+              required
+              fullWidth
+              disabled
           ></TextField>
           <TextField
               label='Email' 
