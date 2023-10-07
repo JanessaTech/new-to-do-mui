@@ -1,0 +1,32 @@
+@charset "utf-8";
+/* CSS Document */
+
+#home { height: 900px; width: 1200px; margin-right: auto; margin-left: auto; }
+#home .welcome { background: #6C9; padding: 20px; height: 60px; width: 1160px; font-size: 36px; font-weight: bolder; }
+
+
+.menu { background: #FCC; float: left; width: 180px; height: 740px; padding: 30px 10px; }
+.menu ul { list-style: none; }
+.menu ul li { font-size: 16px; height: 40px; font-weight: bolder; color: #00F; }
+
+.content #todo ul { list-style: none; }
+.content .error { font-size: 16px; color: #F00; height: 30px; }
+
+.content #todo ul li { height: 40px; font-size: 18px; text-align: left; display: block; }
+.content #todo ul li:hover{ background: #6C6; }
+
+.content #todo { display: block; }
+.content #acc { display: none; }
+.content .loading { font-size: larger; font-weight: bolder; text-align: center; display: block;}
+.content #todo #add { height: 30px; margin-right: 20px; }
+.content #todo #add a { display: block; float: right; }
+
+
+
+
+.rc-dialog-body label { font-weight: bolder; }
+
+
+
+
+.content { background: #CCC; height: 740px; margin-left: 230px; padding: 30px 10px; }
