@@ -7,6 +7,7 @@ npm install @mui/icons-material
 npm install react-router-dom
 npm install react-draggable
 npm install axios
+npm install react-hook-form @hookform/resolvers yup
 ```
 
 # Run codes

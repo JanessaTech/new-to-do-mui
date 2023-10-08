@@ -1,4 +1,4 @@
-import { Divider, Fab} from '@mui/material'
+import { Divider, Fab, IconButton, Snackbar} from '@mui/material'
 import { Box, Container } from '@mui/system'
 import React, { useEffect } from 'react'
 import AddIcon from '@mui/icons-material/Add';
@@ -9,6 +9,7 @@ import CustomCard from './CustomCard'
 import AddDialog from './AddDialog';
 import { UserContext } from './Home';
 import axios from 'axios';
+import CloseIcon from '@mui/icons-material/Close';
 
 export default function Todo() {
 
@@ -22,8 +23,9 @@ export default function Todo() {
     addOpen: false,
     editOpen: false,
     deleteOpen : false,
+    snackBarOpen: false,
     id: '',
-    title: 'xdxdxd',
+    title: '',
     body: '',
     error: '',
     toDelete: '',
@@ -59,7 +61,8 @@ export default function Todo() {
         .catch((error) => {
           setState({
             ...state,
-            error: error.response.data.message
+            error: error.response.data.message,
+            snackBarOpen: true
           })
         })
 }
@@ -82,7 +85,7 @@ export default function Todo() {
     setState({...state, deleteOpen: true, toDelete: id})
   }
   const cancelDelete = () => {
-    setState({...state, deleteOpen : false})
+    setState({...state, deleteOpen : false, error:''})
   }
   const submitDelete = (e) => {
     console.log(`todo #${state.toDelete} will be deleted`)
@@ -103,13 +106,14 @@ export default function Todo() {
                     newTodos.push(todo)
                 }
             }
-            setState({...state, todos : newTodos, deleteOpen : false})
+            setState({...state, todos : newTodos, deleteOpen : false, error:''})
         })
         .catch((error) => {
             setState({
                 ...state,
                 error: error.response.data.message,
-                deleteOpen: false
+                deleteOpen: false,
+                snackBarOpen: true
             })
         })
   }
@@ -123,7 +127,7 @@ export default function Todo() {
     setState({...state, id: found.id, title: found.title, body: found.body, editOpen: true})
   }
   const cancelUpdate = () => {
-    setState({...state, editOpen : false})
+    setState({...state, editOpen : false, error:''})
   }
   const submitEdit = (e, id, newTitle, newBody) => {
     console.log('submit changes after editing')
@@ -156,13 +160,14 @@ export default function Todo() {
                         newTodos.push({id: id, title: title, body: body})
                     }
                 }
-                setState({...state, todos: newTodos, editOpen: false})
+                setState({...state, todos: newTodos, editOpen: false, error:''})
             })
             .catch((error) => {
                 setState({
                     ...state,
                     error: error.response.data.message,
-                    editOpen: false
+                    editOpen: false,
+                    snackBarOpen: true
                 })
             })
   }
@@ -172,7 +177,7 @@ export default function Todo() {
     setState({...state, addOpen:true})
   }
   const cancleAdd = () => {
-    setState({...state, addOpen : false})
+    setState({...state, addOpen : false, error:''})
   }
   const submitAdd = (e, newTitle, newBody) => {
     console.log('submit changes after adding')
@@ -208,18 +213,38 @@ export default function Todo() {
                 setState({
                   ...state, 
                   todos: newTodos, 
-                  addOpen: false
+                  addOpen: false,
+                  error:''
                 })
             })
             .catch((error) => {
-              console.log('run error')
+              console.log(error.response.data.message)
                 setState({
                     ...state,
                     error: error.response.data.message,
-                    addOpen: false
+                    addOpen: false,
+                    snackBarOpen: true
                 })
             })
   }
+
+  const closeErrorPopup = () => {
+    setState({...state, error:'', snackBarOpen: false})
+  }
+
+  const errorPopup = (
+    <Box>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={closeErrorPopup}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </Box>
+    
+  )
 
   return (
     <Container>
@@ -234,9 +259,16 @@ export default function Todo() {
         }
       </Box>
       <ViewDialog open={state.viewOpen} closeView={closeView} id={state.id} title={state.title} body={state.body}/>
-      <DeleteDialog open={state.deleteOpen} cancelDelete={cancelDelete} submitDelete={submitDelete} id={state.toDelete}/>
+      {state.deleteOpen && <DeleteDialog open={state.deleteOpen} cancelDelete={cancelDelete} submitDelete={submitDelete} id={state.toDelete}/>}
       {state.editOpen &&  <UpdateDialog open={state.editOpen} cancelUpdate={cancelUpdate} submitEdit={submitEdit} id={state.id} title={state.title} body={state.body}/>}
       {state.addOpen && <AddDialog open={state.addOpen} cancleAdd={cancleAdd} submitAdd={submitAdd}/>}
+      <Snackbar sx={{color: 'error.main'}}
+        open={state.snackBarOpen}
+        autoHideDuration={6000}
+        onClose={closeErrorPopup}
+        message={state.error}
+        action={errorPopup}>
+      </Snackbar>
     </Container>
   )
 }

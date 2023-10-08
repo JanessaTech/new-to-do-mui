@@ -1,39 +1,29 @@
 import React from 'react'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Button, Container, CssBaseline, FormControl, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import { Button, Container, CssBaseline, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useEffect } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 
 
-export default function Signup() {
+export default function Signup({
+    register,
+    formHandleSubmit,
+    errors,
+  }) {
     const navigate = useNavigate();
     const [state, setState] = React.useState({
-        name: '',
-        inValidName: false,
-        showPassword1: false,
-        showPassword2: false,
-        password1: '',
-        password2: '',
-        inValidPassword: false,
-        mismatched: false,
+        showPassword: false,
+        showPasswordConfirm: false,
         errorMsg: '',
-        inValidEmail: false,
-        email: '',
         age: 20
     })
 
-    const handleSignup = (e) => {
-        e.preventDefault()
-        console.log('inValidUserName=', state.inValidName)
-        console.log('inValidPassword=', state.inValidPassword)
-        console.log('mismatched=', state.mismatched)
-        console.log('inValidEmail=', state.inValidEmail)
-        if (state.inValidName || state.inValidPassword ||state. mismatched || state.inValidEmail) return
-        console.log(`signup. username=${state.name}, password=${state.password1}, email=${state.email}, age=${state.age}`)
-
+    const handleSignup = (data) => {
+        console.log(data)
+        /*
         const signup = {
             name : state.name,
             password : state.password1,
@@ -57,118 +47,25 @@ export default function Signup() {
                     ...state,
                     errorMsg: err.response.data.message
                 })
-            })
-
-    }
-    const handleNameChange = (e) => {
-        e.preventDefault()
-        if (e.target.value.length > 10) {
-            setState({
-                ...state,
-                errorMsg: 'The length of user name should be not greater than 10',
-                inValidName: true,
-                name: e.target.value
-            })
-        } else {
-            setState({
-                ...state,
-                errorMsg: '',
-                inValidName: false,
-                name: e.target.value
-            })
-        }
+            })*/
     }
 
-    const handleClickShowPassword1 = (e) => {
+    const handleAgeChange = event => {
+        setState({...state, age: event.target.value});
+    }
+
+    const handleClickShowPassword = (e) => {
         e.preventDefault()
         setState({
             ...state,
-            showPassword1: !state.showPassword1
+            showPassword: !state.showPassword
         })
     }
-    const handleClickShowPassword2 = (e) => {
+    const handleClickShowPasswordConfirm = (e) => {
         e.preventDefault()
         setState({
             ...state,
-            showPassword2: !state.showPassword2
-        })
-    }
-
-    const handleEmailChange = (e) => {
-        e.preventDefault()
-        setState({
-            ...state,
-           email: e.target.value 
-        })
-    }
-    const handlePassword1Change = (e) => {
-        e.preventDefault()
-        setState({
-            ...state,
-            password1: e.target.value
-        })
-    }
-    const handlePassword2Change = (e) => {
-        e.preventDefault()
-        if (e.target.value !== state.password1) {
-            setState({
-                ...state,
-                errorMsg: 'Password is not matched',
-                mismatched: true,
-                password2: e.target.value
-            })
-        } else {
-            setState({
-                ...state,
-                errorMsg:'',
-                mismatched: false,
-                password2: e.target.value
-            })
-        }
-    }
-
-    const validateEmail = () => {
-        const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-        if (state.email.length > 0 && !emailRegex.test(state.email)) {
-            setState({
-                ...state,
-                inValidEmail: true,
-                errorMsg: 'Please input valid email'
-            })
-        } else {
-            setState({
-                ...state,
-                inValidEmail: false,
-                errorMsg: ''
-            })
-        }
-    }
-
-    const validatePassword = () => {
-        const passRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/
-        if (!passRegex.test(state.password1)) {
-            setState({
-                ...state,
-                errorMsg:'Password should contain at least one letter, one number and minimum eight characters',
-                inValidPassword: true
-            })
-        }else {
-            setState({
-                ...state,
-                errorMsg:'',
-                inValidPassword: false
-            })
-        }
-    }
-
-    useEffect(() => validateEmail(), [state.email])
-    useEffect(() => validatePassword(), [state.password1])
-
-    const handleAgeChange = (e) => {
-        e.preventDefault()
-        setState({
-            ...state,
-            age: e.target.value
+            showPasswordConfirm: !state.showPasswordConfirm
         })
     }
 
@@ -176,10 +73,10 @@ export default function Signup() {
         <Container maxWidth='xs'>
             <CssBaseline/>
             <Box sx={{display: 'flex'}}>
-                <Box component='form' onSubmit={handleSignup}
+                <Box component='form' onSubmit={formHandleSubmit(handleSignup)}
                 sx={{ mt: 20, width:1,
                     '& .MuiTextField-root,& .MuiFormControl-root': {
-                    mb: 2
+                    mb: 1
                     } 
                   }}
                 noValidate autoComplete='off'
@@ -188,71 +85,91 @@ export default function Signup() {
                         {state.errorMsg}
                     </Box>
                     <TextField
+                        id='name'
+                        name='name'
                         label='User Name' 
+                        aria-label='User Name' 
+                        {...register('name')}
                         variant="outlined"
                         color='primary'
-                        error={state.inValidName}
                         fullWidth
                         required
-                        onChange={handleNameChange}
+                        error={errors.name ? true: false}
+                        helperText={errors.name ? errors.name.message : " "}
                     ></TextField>
-                    <FormControl variant="outlined" fullWidth color='primary' required error={state.inValidPassword}>
+                    <FormControl variant="outlined" fullWidth color='primary' required error={errors.password ? true: false}>
                         <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
                         <OutlinedInput
-                            id='password1' 
+                            id='password' 
+                            name="password"
                             aria-label='toggle password visibility'
                             label='Password'
-                            type={state.showPassword1 ? 'text': 'password'}
+                            {...register('password')}
+                            type={state.showPassword ? 'text': 'password'}
                             endAdornment={
                                 <InputAdornment position='end'>
-                                    <IconButton onClick={handleClickShowPassword1}>
-                                        {state.showPassword1 ? <VisibilityOff/>: <Visibility /> }
+                                    <IconButton onClick={handleClickShowPassword}>
+                                        {state.showPassword ?  <Visibility />: <VisibilityOff/>}
                                     </IconButton>
                                 </InputAdornment>}
-                            onChange={handlePassword1Change}
                             />
+                            <FormHelperText id="password-helper-text">
+                                {errors.password ? errors.password.message : " "}
+                            </FormHelperText>
                     </FormControl>
-                    <FormControl variant="outlined" fullWidth color='primary' required error={state.mismatched}>
-                        <InputLabel htmlFor="outlined-adornment-password-again">Password</InputLabel>
+                    <FormControl variant="outlined" fullWidth color='primary' required error={errors.passwordConfirm ? true: false}>
+                        <InputLabel htmlFor="outlined-adornment-passwordConfirm">Confirm Password</InputLabel>
                         <OutlinedInput
-                            id='password2' 
-                            aria-label='toggle password visibility'
-                            label='Password'
-                            type={state.showPassword2 ? 'text': 'password'}
+                            id='passwordConfirm' 
+                            name='passwordConfirm'
+                            label='Confirm Password'
+                            aria-label='toggle passwordConfirm visibility'
+                            {...register('passwordConfirm')}
+                            type={state.showPasswordConfirm ? 'text': 'password'}
                             endAdornment={
                                 <InputAdornment position='end'>
-                                    <IconButton onClick={handleClickShowPassword2}>
-                                        {state.showPassword2 ? <VisibilityOff/>: <Visibility /> }
+                                    <IconButton onClick={handleClickShowPasswordConfirm}>
+                                        {state.showPasswordConfirm ? <VisibilityOff/>: <Visibility /> }
                                     </IconButton>
                                 </InputAdornment>}
-                            onChange={handlePassword2Change}
                             />
-                            
+                            <FormHelperText id="passwordConfirm-helper-text">
+                                {errors.passwordConfirm ? errors.passwordConfirm.message : " "}
+                            </FormHelperText>
                     </FormControl>
                     <TextField
+                        id='email'
+                        name='email'
                         label='Email' 
+                        aria-label='email'
+                        {...register('email')}
+                        type='email'
                         variant="outlined"
                         color='primary'
                         fullWidth
-                        type='email'
-                        value={state.email}
-                        error={state.inValidEmail}
-                        onChange={handleEmailChange}
+                        error={errors.email ? true: false}
+                        helperText={errors.email ? errors.email.message : " "}
                     ></TextField>
                     <FormControl fullWidth>
                         <InputLabel id="demo-simple-select-label">Age</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
-                            value={state.age}
                             label="Age"
+                            name='age'
+                            value={state.age}
+                            {...register('age')}
                             onChange={handleAgeChange}
+                            error={errors.age ? true: false}
                         >
-                            <MenuItem value={20}>Twenty</MenuItem>
+                            <MenuItem selected  value={20}>Twenty</MenuItem>
                             <MenuItem value={30}>Thirty</MenuItem>
                             <MenuItem value={40}>Forty</MenuItem>
                             <MenuItem value={50}>Fifty</MenuItem>
                         </Select>
+                        <FormHelperText id="age-helper-text">
+                                {errors.age ? errors.age.message : " "}
+                        </FormHelperText>
                     </FormControl>
                     <Button variant="contained" type="submit">Signup</Button>
                 </Box>
