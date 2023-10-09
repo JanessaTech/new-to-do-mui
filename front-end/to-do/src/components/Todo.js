@@ -1,15 +1,15 @@
-import { Divider, Fab, IconButton, Snackbar} from '@mui/material'
+import {Fab, IconButton, Snackbar} from '@mui/material'
 import { Box, Container } from '@mui/system'
 import React, { useEffect } from 'react'
 import AddIcon from '@mui/icons-material/Add';
 import DeleteDialog from './DeleteDialog'
-import UpdateDialog from './UpdateDialog'
 import ViewDialog from './ViewDialog'
 import CustomCard from './CustomCard'
-import AddDialog from './AddDialog';
 import { UserContext } from './Home';
 import axios from 'axios';
 import CloseIcon from '@mui/icons-material/Close';
+import UpdateDialogForm from './UpdateDialogForm';
+import AddDialogForm from './AddDialogForm';
 
 export default function Todo() {
 
@@ -17,8 +17,7 @@ export default function Todo() {
   const [state, setState] = React.useState({
     userId: user.id,
     token: user.token,
-    todos : [
-    ],
+    todos : [],
     viewOpen : false,
     addOpen: false,
     editOpen: false,
@@ -28,8 +27,7 @@ export default function Todo() {
     title: '',
     body: '',
     error: '',
-    toDelete: '',
-    isLoading: true,
+    toDelete: ''
   })
   useEffect(() => {
     fetchTodos()
@@ -53,8 +51,7 @@ export default function Todo() {
             }
             setState({
               ...state,
-              todos: todos,
-              isLoading: false
+              todos: todos
               }
             )
         })
@@ -129,7 +126,7 @@ export default function Todo() {
   const cancelUpdate = () => {
     setState({...state, editOpen : false, error:''})
   }
-  const submitEdit = (e, id, newTitle, newBody) => {
+  const submitEdit = (id, newTitle, newBody) => {
     console.log('submit changes after editing')
     console.log(`id=${id}`)
     console.log(`newTitle=${newTitle}`)
@@ -179,7 +176,7 @@ export default function Todo() {
   const cancleAdd = () => {
     setState({...state, addOpen : false, error:''})
   }
-  const submitAdd = (e, newTitle, newBody) => {
+  const submitAdd = (newTitle, newBody) => {
     console.log('submit changes after adding')
     console.log(`newTitle=${newTitle}`)
     console.log(`newBody=${newBody}`)
@@ -203,7 +200,6 @@ export default function Todo() {
         }
         axios(options)
             .then((response) => {
-              console.log('run ok')
                 console.log(response.data.data)
                 let newTodos = []
                 for(let todo of state.todos) {
@@ -260,8 +256,8 @@ export default function Todo() {
       </Box>
       <ViewDialog open={state.viewOpen} closeView={closeView} id={state.id} title={state.title} body={state.body}/>
       {state.deleteOpen && <DeleteDialog open={state.deleteOpen} cancelDelete={cancelDelete} submitDelete={submitDelete} id={state.toDelete}/>}
-      {state.editOpen &&  <UpdateDialog open={state.editOpen} cancelUpdate={cancelUpdate} submitEdit={submitEdit} id={state.id} title={state.title} body={state.body}/>}
-      {state.addOpen && <AddDialog open={state.addOpen} cancleAdd={cancleAdd} submitAdd={submitAdd}/>}
+      {state.editOpen &&  <UpdateDialogForm open={state.editOpen} cancelUpdate={cancelUpdate} submitEdit={submitEdit} user={state.userId} id={state.id} title={state.title} body={state.body}/>}
+      {state.addOpen && <AddDialogForm open={state.addOpen} cancleAdd={cancleAdd} submitAdd={submitAdd} user={state.userId}/>}
       <Snackbar sx={{color: 'error.main'}}
         open={state.snackBarOpen}
         autoHideDuration={6000}

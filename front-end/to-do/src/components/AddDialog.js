@@ -3,57 +3,34 @@ import React, { useEffect } from 'react'
 import PaperComponent from './PaperComponent'
 import { red } from '@mui/material/colors'
 
-export default function AddDialog({open, cancleAdd, submitAdd}) {
-    const [internalTitle, setInternalTitle] = React.useState('')
-    const [isTitleInvalid, setIsTitleInvalid] = React.useState(false)
-    const [internalBody, setInternalBody] = React.useState('')
-    const [isBodyInvalid, setIsBodyInvalid] = React.useState(false)
-    const [errMsg, setErrMsg] = React.useState('')
+export default function AddDialog({
+    register, 
+    formHandleSubmit, 
+    errors, 
+    open, 
+    cancleAdd, 
+    submitAdd, 
+    user}) {
+
+    const [state, setState] = React.useState({
+        user: user,
+        title: '',
+        body: ''
+    })
 
     const handleTitleChange = (e) => {
         e.preventDefault()
-        setInternalTitle(e.target.value)
-        if(e.target.value.length > 20) {
-            setErrMsg('The length of the title should not be more than 20 characters ')
-            setIsTitleInvalid(true)
-        }else if(e.target.value.length === 0){
-            setErrMsg('Title cannot be empty')
-            setIsTitleInvalid(true)
-        } else {
-            setInternalTitle(e.target.value)
-            setErrMsg('')
-            setIsTitleInvalid(false)
-        }
+        setState({...state, title: e.target.value})
     }
 
     const handleBodyChange = (e) => {
         e.preventDefault()
-        setInternalBody(e.target.value) 
-        //console.log(e.target.value)
-        if (e.target.value.length === 0) {
-            setErrMsg('Body cannot be empty')
-            setIsBodyInvalid(true)
-        }else {    
-            setErrMsg('')
-            setIsBodyInvalid(false)
-        }
-        
+        setState({...state, body:e.target.value})    
     }
 
-    const submitAddInDialog = (e) => {
-        e.preventDefault(e)
-        if (isTitleInvalid) return
-        if (!internalTitle || internalTitle.length === 0) {
-            setErrMsg('Title cannot be empty')
-            setIsTitleInvalid(true)
-            return
-        }
-        if (!internalBody || internalBody.length === 0) {
-            setErrMsg('Body cannot be empty')
-            setIsBodyInvalid(true)
-            return
-        }
-        submitAdd(e, internalTitle, internalBody)
+    const submitNew = (data) => {
+        console.log(data)
+        submitAdd(state.title, state.body)
     }
 
     return (
@@ -70,38 +47,56 @@ export default function AddDialog({open, cancleAdd, submitAdd}) {
               <Avatar sx={{bgcolor:red[500]}} aria-label='todo'>{'NA'}</Avatar>
               <Typography sx={{ml:1, lineHeight:'40px'}}></Typography>
             </DialogTitle>
-            <DialogContent dividers>
-              <Box sx={{ '& .MuiTextField-root': {mb:2}}}>
-                <Box sx={{height:30, mb:2}} color='red'>
-                  <Typography>{errMsg}</Typography>     
-                </Box>
-                <TextField
-                    label='Title' 
-                    value={internalTitle}
-                    variant="outlined"
-                    color='primary'
-                    error={isTitleInvalid}
-                    fullWidth
-                    required
-                    onChange={handleTitleChange}
-                />
-                <TextField
-                    label='Body' 
-                    value={internalBody}
-                    variant="outlined"
-                    color='primary'
-                    error={isBodyInvalid}
-                    multiline
-                    fullWidth
-                    required
-                    onChange={handleBodyChange}
-                />
-              </Box>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={cancleAdd}>Cancel</Button>
-              <Button onClick={(e) => submitAddInDialog(e)}>Add</Button>
-            </DialogActions>
+            <Box component='form' onSubmit={formHandleSubmit(submitNew)} 
+                sx={{ '& .MuiTextField-root': {mb:1}}} 
+                noValidate autoComplete='off'>
+                <DialogContent dividers>
+                    <input
+                        id='user'
+                        label='user' 
+                        name='user'
+                        aria-label='user' 
+                        value={state.user}
+                        {...register('user')}
+                        type="hidden"
+                    />
+                    <TextField
+                        id='title'
+                        label='Title' 
+                        name='title'
+                        aria-label='title' 
+                        value={state.title}
+                        {...register('title')}
+                        variant="outlined"
+                        color='primary'
+                        fullWidth
+                        required
+                        onChange={handleTitleChange}
+                        error={errors.title ? true: false}
+                        helperText={errors.title ? errors.title.message : " "}
+                    />
+                    <TextField
+                        id='body'
+                        label='Body' 
+                        name='body'
+                        aria-label='body' 
+                        value={state.body}
+                        {...register('body')}
+                        variant="outlined"
+                        color='primary'
+                        multiline
+                        fullWidth
+                        required
+                        onChange={handleBodyChange}
+                        error={errors.body ? true: false}
+                        helperText={errors.body ? errors.body.message : " "}
+                    />
+                </DialogContent>
+                <DialogActions>
+                <Button onClick={cancleAdd}>Cancel</Button>
+                <Button type="submit">Add</Button>
+                </DialogActions>
+            </Box>
         </Dialog>
       )
 }
