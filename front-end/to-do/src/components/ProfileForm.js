@@ -1,16 +1,15 @@
 import { useForm } from "react-hook-form"
 import React from 'react'
 import { yupResolver } from "@hookform/resolvers/yup"
-import Signup from "./Signup"
-import {signup} from "../schemas"
+import Profile from "./Profile"
+import {updateUser} from "../schemas"
 
-export default function SignupForm() {
+export default function ProfileForm() {
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
-        resolver: yupResolver(signup)
+        resolver: yupResolver(updateUser)
     })
-
   return (
-    <Signup
+    <Profile
       register={register}
       formHandleSubmit={handleSubmit}
       errors={errors}

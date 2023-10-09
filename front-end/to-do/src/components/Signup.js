@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Button, Container, CssBaseline, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { useEffect } from 'react';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 
@@ -11,7 +10,7 @@ import {useNavigate} from 'react-router-dom';
 export default function Signup({
     register,
     formHandleSubmit,
-    errors,
+    errors
   }) {
     const navigate = useNavigate();
     const [state, setState] = React.useState({
@@ -23,13 +22,13 @@ export default function Signup({
 
     const handleSignup = (data) => {
         console.log(data)
-        /*
+
         const signup = {
-            name : state.name,
-            password : state.password1,
-            age: state.age,
+            name : data.name,
+            password : data.password,
+            age: data.age,
             roles: ["user"],
-            email : state.email
+            email : data.email
         }
         let options = {};
         options = {
@@ -42,16 +41,17 @@ export default function Signup({
                 navigate('/login')
             })
             .catch((err) => {
-                console.log(err.response.data)
+                console.log(err.response?.data)
                 setState({
                     ...state,
-                    errorMsg: err.response.data.message
+                    errorMsg: err.response?.data?.message
                 })
-            })*/
+            })
     }
 
-    const handleAgeChange = event => {
-        setState({...state, age: event.target.value});
+    const handleAgeChange = e => {
+        e.preventDefault()
+        setState({...state, age: e.target.value});
     }
 
     const handleClickShowPassword = (e) => {
@@ -129,7 +129,7 @@ export default function Signup({
                             endAdornment={
                                 <InputAdornment position='end'>
                                     <IconButton onClick={handleClickShowPasswordConfirm}>
-                                        {state.showPasswordConfirm ? <VisibilityOff/>: <Visibility /> }
+                                        {state.showPasswordConfirm ? <Visibility /> : <VisibilityOff/>}
                                     </IconButton>
                                 </InputAdornment>}
                             />
@@ -154,7 +154,7 @@ export default function Signup({
                         <InputLabel id="demo-simple-select-label">Age</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
-                            id="demo-simple-select"
+                            id="age-signup-select"
                             label="Age"
                             name='age'
                             value={state.age}
@@ -162,7 +162,7 @@ export default function Signup({
                             onChange={handleAgeChange}
                             error={errors.age ? true: false}
                         >
-                            <MenuItem selected  value={20}>Twenty</MenuItem>
+                            <MenuItem value={20}>Twenty</MenuItem>
                             <MenuItem value={30}>Thirty</MenuItem>
                             <MenuItem value={40}>Forty</MenuItem>
                             <MenuItem value={50}>Fifty</MenuItem>
