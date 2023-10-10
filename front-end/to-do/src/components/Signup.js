@@ -1,11 +1,25 @@
 import React from 'react'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import { Button, Container, CssBaseline, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
+import { Button, Container, CssBaseline, FormControl, FormHelperText, IconButton, InputAdornment, InputLabel, MenuItem, OutlinedInput, Select, Checkbox, ListItemText } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
 import {useNavigate} from 'react-router-dom';
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+const roles = [
+  'user'
+];
 
 export default function Signup({
     register,
@@ -16,18 +30,19 @@ export default function Signup({
     const [state, setState] = React.useState({
         showPassword: false,
         showPasswordConfirm: false,
+        roles: ['user'],
         errorMsg: '',
         age: 20
     })
 
     const handleSignup = (data) => {
         console.log(data)
-
         const signup = {
             name : data.name,
             password : data.password,
+            passwordConfirm: data.passwordConfirm,
             age: data.age,
-            roles: ["user"],
+            roles: data.roles,
             email : data.email
         }
         let options = {};
@@ -136,6 +151,30 @@ export default function Signup({
                             <FormHelperText id="passwordConfirm-helper-text">
                                 {errors.passwordConfirm ? errors.passwordConfirm.message : " "}
                             </FormHelperText>
+                    </FormControl>
+                    <FormControl fullWidth color='primary' error={errors.roles ? true: false}>
+                        <InputLabel id="role-select-label">Roles</InputLabel>
+                        <Select
+                            id="role-profile-select"
+                            name='roles'
+                            aria-label='"role-profile-select'
+                            {...register('roles')}
+                            value={state.roles}
+                            input={<OutlinedInput label="Tag" />}
+                            renderValue={(selected) => selected.join(', ')}
+                            MenuProps={MenuProps}
+                            multiple
+                        >
+                            {roles.map((role) => (
+                            <MenuItem key={role} value={role}>
+                                <Checkbox checked={state.roles.indexOf(role) > -1} />
+                                <ListItemText primary={role} />
+                            </MenuItem>
+                            ))}
+                        </Select>
+                        <FormHelperText id="roles-helper-text">
+                                {errors.roles ? errors.roles.message : " "}
+                        </FormHelperText>
                     </FormControl>
                     <TextField
                         id='email'

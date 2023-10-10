@@ -2,11 +2,11 @@ import React from 'react'
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import UpdateDialog from './UpdateDialog'
-import {updateTodo} from "../schemas"
+import {todo} from "../schemas"
 
 export default function UpdateDialogForm(props) {
     const { register, handleSubmit, formState: { errors }, reset } = useForm({
-        resolver: yupResolver(updateTodo)
+        resolver: yupResolver(todo.form_updateTodo)
     })
 
   return (

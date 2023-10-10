@@ -5,6 +5,8 @@ import { VisibilityOff } from '@mui/icons-material';
 import { UserContext } from './Home';
 import axios from 'axios';
 
+
+
 export default function Profile({
   register,
   formHandleSubmit,
@@ -89,6 +91,7 @@ export default function Profile({
     axios.defaults.headers.common = {Authorization: `Bearer ${state.token}`}
     const update = {
       id: data.id,
+      password: data.password,
       name: data.name,
       email: data.email,
       age: data.age
@@ -166,6 +169,9 @@ export default function Profile({
               aria-label='name' 
               value={state.name}
               {...register('name')}
+              InputProps={{
+                readOnly: true,
+              }}
               variant="outlined"
               color='primary'
               required
@@ -186,6 +192,7 @@ export default function Profile({
               required
               fullWidth
               InputProps={{
+                readOnly: true,
                 endAdornment:(
                 <InputAdornment position='end'>
                     <IconButton>
@@ -222,8 +229,9 @@ export default function Profile({
               helperText={errors.email ? errors.email.message : " "}
               disabled={state.emailDisabled}
           ></TextField>
+          
           <FormControl fullWidth disabled={state.ageDisabled}>
-              <InputLabel id="demo-simple-select-label">Age</InputLabel>
+              <InputLabel id="age-select-label">Age</InputLabel>
               <Select
                   labelId="demo-simple-select-label"
                   id="age-profile-select"
