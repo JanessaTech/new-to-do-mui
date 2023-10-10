@@ -1,4 +1,5 @@
 const yup = require('yup')
+const {form_creatTodo, form_updateTodo} = require('./form_todo')
 
 const schemas = {
     getAllTodos: yup.object({
@@ -7,19 +8,10 @@ const schemas = {
         })
     }),
     creatTodo: yup.object({
-        body: yup.object({
-            user: yup.number().min(0).required(),
-            title: yup.string().min(5).max(50).required(),
-            body: yup.string().min(3).max(100).required()
-        })
+        body: form_creatTodo
     }),
     updateTodo: yup.object({
-        body: yup.object({
-            user: yup.number().min(0).required(),
-            id: yup.number().min(0).required(),
-            title: yup.string().min(5).max(50).required(),
-            body: yup.string().min(3).max(100).required()
-        })
+        body: form_updateTodo
     }),
     deleteTodoById: yup.object({
         params: yup.object({
@@ -31,3 +23,5 @@ const schemas = {
 }
 
 module.exports = schemas
+
+

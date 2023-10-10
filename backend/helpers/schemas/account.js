@@ -1,26 +1,15 @@
 const yup = require('yup')
+const {form_login, form_register, form_updateAccount} = require('./form_account')
 
 const schemas = {
     login : yup.object({
-        body: yup.object({
-            name : yup.string().min(5).max(15).required(),
-            password: yup.string().min(5).max(10).required()
-        })
+        body: form_login
     }),
     register : yup.object({
-        body: yup.object({
-            name : yup.string().min(5).max(15).required(),
-            password: yup.string().min(5).max(10).required(),
-            email: yup.string().email().optional()
-        })
+        body: form_register
     }),
     updateAccount : yup.object({
-        body: yup.object({
-            id : yup.number().required(),
-            name : yup.string().min(5).max(15).required(),
-            password: yup.string().min(5).max(10).optional(),
-            email: yup.string().email().optional()
-        })
+        body: form_updateAccount
     }),
     deleteAccount :yup.object({
         params: yup.object({

@@ -23,6 +23,7 @@ class AccountController {
     }
     async register(req, res, next){
         logger.info('AccountController.register')
+        logger.info(JSON.stringify(req.body))
         try {
             const acc = {
                 name: req.body.name,
