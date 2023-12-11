@@ -15,3 +15,14 @@ npm install react-hook-form @hookform/resolvers yup
 ```
 npm start
 ```
+
+# Which features are used in this project?
+
+- How to route
+- How to use localStorage
+- How to use useNavigate
+- How to use useOutlet
+- How to use Context
+- How to use axios
+- How to use react-hook-form
+- How to use yup
